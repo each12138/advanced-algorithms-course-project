@@ -1,0 +1,95 @@
+% =============================================================================
+%   FLP 不可能性结果
+%   编译方式：xelatex main.tex
+% =============================================================================
+\documentclass[12pt, a4paper]{ctexart}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[top=2.5cm, bottom=2.5cm, left=3cm, right=3cm]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{assumption}{假设}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{注记}[section]
+\newtheorem{example}{例子}[section]
+
+\title{FLP 不可能性结果}
+\author{任益驰 221900329}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{引言}
+
+\subsection{主要问题}
+    分布式共识是分布式计算理论中最核心的问题之一。基本形式为：一组进程，每个进程持有一个输入值，它们需要通过彼此通信，最终全体一致地对一个输出值达成协议，且该输出值必须是某个进程的输入值。
+
+    形式化来说，一个共识协议需满足以下三条性质：
+    \begin{enumerate}
+        \item \textbf{一致性(Agreement)}：所有节点达成一致的决议。
+        \item \textbf{有效性(Validity)}：输出值必须是某个进程的输入值。也就是如果所有节点中的数据只有0和1两种，那么最后达成一致的决议一定是0和1中的一种，不会出现其他值。
+        \item \textbf{终止性(Termination)}：所有正常运行的节点最终都能够做出决议。
+    \end{enumerate}
+
+    共识问题是许多分布式系统的基础构件，一种广为人知的形式是事务提交问题，常见于分布式数据库系统。在该场景中，多个数据管理器进程需协同决定是否将某事务的结果永久写入数据库或全部撤销，共识问题是保证数据一致性的核心机制。因此，共识的可解性是一个既有理论深度又有工程意义的重要问题。
+
+\subsection{相关研究}
+    在本文的工作之前，分布式系统领域已经对共识问题有了一定的认识。研究者们已经证明：在同步系统中，即使存在进程崩溃故障，共识问题也是可解的（如 Pease–Shostak–Lamport 的拜占庭将军问题）。然而，同步假设——即消息传递有已知的上界、进程步调以轮次同步推进——在现实系统中往往无法严格保证。
+
+    一个自然的问题是：如果我们放松同步假设，考虑异步系统（其中消息延迟无上界、进程之间没有公共时钟），共识问题是否仍然可解？
+
+\subsection{核心结论}
+    Fischer、Lynch和Paterson在论文《Impossibility of Distributed Consensus with One Faulty Process》中给出了一个令人震惊的结论：在消息系统可靠（没有丢包，消息不会被重复传递）的异步系统中，即使只允许一个进程崩溃故障，也无法保证共识问题的可解性。换句话说，在异步系统中，任何共识协议都无法同时满足一致性、有效性和终止性三条性质。
+
+    该结果被称为FLP不可能性结果，它揭示了分布式计算理论中的一个基本限制，并对后续的研究产生了深远影响。
+
+\section{定义}
+
+\subsection{术语}
+
+【待补充】
+
+\subsection{模型}
+
+【待补充】
+
+
+\section{结论}
+
+\subsection{LEMMA 1}
+
+【待补充】
+
+\subsection{THEOREM 1}
+
+【待补充】
+
+\subsection{LEMMA 2}
+
+【待补充】
+
+\subsection{LEMMA 3}
+
+【待补充】
+
+\subsection{THEOREM 2}
+
+【待补充】
+
+
+\section{结论}
+
+【待补充】
+
+\end{document}
