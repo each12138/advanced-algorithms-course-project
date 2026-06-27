@@ -58,14 +58,49 @@
 
 \subsection{术语}
 
-【待补充】
+    \textbf{Process}: 在该论文中可以把它理解为分布式系统中的一个节点。每一个 process p 有一个 input register $x_{p}$, 可以理解为输入值，只有0和1两种。此外 process p 还有一个 output register $y_{p}$, 可以理解为输出值，有b，0和1三种。即$x_{p} \in \{0, 1\}, y_{p} \in \{b, 0, 1\}$。
+
+    \textbf{Message system}: 在该论文中可以把它理解为分布式系统中的一个通信网络，连接了整个集群中的所有 process。整个系统中所有的 process 均共用这一个 message system，process 通过这个进行相互之间的通讯。
+
+    \textbf{Asynchronous system}: 异步系统。在该论文中对异步系统的核心假设是：没有任何关于时间的信息可用。具体来说：1）没有任何关于消息传递延迟的假设。消息可以在任意时间被传递，甚至可能永远不会被传递。2）没有任何关于进程执行速度的假设。进程可以以任意速度执行，甚至可能永远不会执行。3）没有同步时钟。进程之间没有任何同步时钟，无法通过时间来协调彼此的行为，无法使用超时机制。4）没有任何关于进程崩溃的假设。进程可能会崩溃，但无法通过时间来判断一个进程是否已经崩溃，无法区分“进程已崩溃”和“进程只是跑得非常慢”。
+        
+    \textbf{Internal state}: 内部状态。文中将Internal state定义为一个元组，即internal state = (input register, output register, program counter, internal storage)。
+
+    \textbf{Configuration}: 配置。一个 Configuration 包含了整个集群中所有 process 的 internal state 外加 message system。
+
+    \textbf{Partially correct}: 部分正确。一个共识协议是部分正确的，需要满足两个条件：(1) 不存在任何一个可到达的 configuration 同时包含两种不同的决议值（即不会出现矛盾）。(2) 对于每种可能的决议值（0 和 1），都存在某个可到达的 configuration 能够做出该决议（即两种值都有可能被选中，排除掉那种永远只输出 0 的平凡解）。简单来说，部分正确只保证"不会错"，但不保证"一定能出结果"。
+
+    \textbf{Totally correct in spite of one fault}: 单故障下完全正确。一个共识协议如果在部分正确的基础上，还满足"每一个 admissible run 都是 deciding run"，则称该协议是单故障下完全正确的。其中 admissible run 是指"至多一个进程故障，且所有发往非故障进程的消息最终都能被收到"的运行，deciding run 是指"某个进程在该运行中做出了决策"的运行。简单来说，完全正确比部分正确多了一个"活性"要求——只要故障不超过一个、消息最终能送达，协议就必须在有限时间内给出结果。
+
+    \textbf{Bivalent}: 二值（或"未锁定"）。对于一个 configuration C，如果从 C 出发可以到达的 configuration 中，既存在决议值为 0 的 configuration，也存在决议值为 1 的 configuration，则称 C 是 bivalent 的。也就是说，系统从 C 出发，既有可能最终决定为 0，也有可能最终决定为 1，尚未锁定方向。
+
+    \textbf{Univalent}: 单值（或"已锁定"）。与 bivalent 相对，如果从 C 出发可以到达的 configuration 中，所有可能路径都通向同一种决议值，则称 C 是 univalent 的。具体来说，若只通向 0 则称 0-valent，只通向 1 则称 1-valent。系统一旦进入 univalent 状态，命运的走向就已经确定了，尽管可能还没有进程实际做出决策。
 
 \subsection{模型}
+    在这一部分，我来简单介绍论文建立的模型，其中包括：
+    \begin{enumerate}
+        \item \textbf{宽松的分布式环境}
+            \begin{enumerate}
+                \item 不考虑 Byzantine 故障，即数据在传输过程不会被篡改。
+                \item 假设消息系统可靠，不会丢失数据包，也不会重复传输数据包。但是不保证数据传输的先后顺序，而且有时候会返回空（$\emptyset$）。
+                \item 存在至多一个 process 会在某一个不确定的时间 dead。
+                \item 为了简化，论文假设所有 process 的input register $x_{p} \in \{0, 1\}$，所有未崩溃的 process 的 output register $y_{p} \in \{0, 1\}$。而且对于正常的共识算法，肯定是要保证所有的非故障 process 必须选择相同值，但是论文在这里放宽了条件，只要求至少存在某个进程最终做出决策。
+                \item 前面提到 message system 可能返回空（$\emptyset$），但是论文假设了如果一个 process 不停从 message system 中接受 message，那它终究能够接收到本该发给它的 message。这样就模拟了网络的延迟，但是消息一定会送达。
+            \end{enumerate}
 
-【待补充】
+        \item \textbf{消息系统}
+        
+            Process 之间的通讯是通过消息系统实现的。message的格式为(p, m), p 是 process，m 是 message 的内容。Messgae system 支持两种操作：
+            \begin{enumerate}
+                \item send(p, m): 将消息 (p, m) 放入 message system 中。
+                \item receive(p): 从 message system 中取出一个发往 p 的消息 (p, m)，如果没有则返回空（$\emptyset$）。
+            \end{enumerate}
+    
+    \end{enumerate}
 
+    \textbf{模型的核心特征}：整个模型可以概括为一组确定型自动机 + 一个异步消息系统。其中：(1) 每个 process 是确定型的——给定相同的内部状态和输入消息，必然产生相同的后续行为。系统的所有非确定性来源于消息系统的调度，而非进程本身的行为。(2) 消息系统是唯一的非确定性来源——它可以选择何时投递哪条消息、何时返回空（$\emptyset$）。(3) 两个层面通过"事件"交互：事件 $e = (p, m)$ 表示消息 $m$ 被投递给进程 $p$，触发 $p$ 执行一步计算。论文中所有系统状态的演化都通过事件序列（即调度，schedule）来描述，而非通过时间轴。
 
-\section{结论}
+\section{证明}
 
 \subsection{LEMMA 1}
 
