@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (MiKTeX 24.4) (preloaded format=xelatex 2025.5.16)  27 JUN 2026 17:44
+This is XeTeX, Version 3.141592653-2.6-0.999996 (MiKTeX 24.4) (preloaded format=xelatex 2025.5.16)  27 JUN 2026 23:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -573,21 +573,29 @@ LaTeX Font Info:    Font shape `TU/SimSun(0)/m/sl' in size <12> not available
 
 [4]
 
-[5] (main.aux)
+[5]
+
+[6]
+
+[7]
+
+[8]
+
+[9] (main.aux)
  ***********
 LaTeX2e <2024-11-01>
 L3 programming layer <2022/07/14>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: C084E4BB6F1B1EDEB1DBAB037757AB02;1149.
+(rerunfilecheck)             Checksum: 7568B3AFC166CB525332B5FB939BE14B;1149.
  ) 
 Here is how much of TeX's memory you used:
- 16022 strings out of 408789
- 344909 string characters out of 5755908
- 760808 words of memory out of 5000000
- 38740 multiletter control sequences out of 15000+600000
- 567539 words of font info for 96 fonts, out of 8000000 for 9000
+ 16035 strings out of 408789
+ 345492 string characters out of 5755908
+ 759808 words of memory out of 5000000
+ 38751 multiletter control sequences out of 15000+600000
+ 567555 words of font info for 98 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 93i,6n,111p,599b,341s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,6n,111p,599b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.xdv (5 pages, 72608 bytes).
+Output written on main.xdv (9 pages, 138620 bytes).

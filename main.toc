@@ -7,8 +7,8 @@
 \contentsline {subsection}{\numberline {2.2}模型}{4}{subsection.2.2}%
 \contentsline {section}{\numberline {3}证明}{5}{section.3}%
 \contentsline {subsection}{\numberline {3.1}LEMMA 1}{5}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}THEOREM 1}{5}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}LEMMA 2}{5}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}LEMMA 3}{5}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}THEOREM 2}{5}{subsection.3.5}%
-\contentsline {section}{\numberline {4}结论}{5}{section.4}%
+\contentsline {subsection}{\numberline {3.2}LEMMA 2}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}LEMMA 3}{6}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}THEOREM 1}{7}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}THEOREM 2}{8}{subsection.3.5}%
+\contentsline {section}{\numberline {4}结论}{8}{section.4}%
