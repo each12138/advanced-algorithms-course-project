@@ -68,6 +68,12 @@
 
     \textbf{Configuration}: 配置。一个 Configuration 包含了整个集群中所有 process 的 internal state 外加 message system。
 
+    \textbf{Step / Event}: 事件。事件 \(e = (p, m)\) 表示消息 \(m\) 被投递给进程 \(p\)。将事件 \(e\) 应用于配置 \(C\) 得到新配置 \(e(C)\)，其中进程 \(p\) 根据其内部状态和消息 \(m\) 执行一步计算，更新内部状态并可能发送新消息。
+
+    \textbf{Schedule}: 调度。调度是一个事件的序列 \(\sigma = e_1 e_2 \dots\)（可能无限）。将有限调度 \(\sigma\) 应用于配置 \(C\) 得到新配置 \(\sigma(C) = e_n(\dots e_2(e_1(C))\dots)\)。
+
+    \textbf{Run}: 运行。运行是由配置构成的（可能无限）序列 \(C_0, C_1, C_2, \dots\)，使得存在调度 \(\sigma = e_1 e_2 \dots\) 满足 \(C_i = e_i(C_{i-1})\)。
+
     \textbf{Admissible run}: 可接受的运行。一个运行是可接受的，如果它满足以下两个条件：(1) 至多有一个进程崩溃；(2) 所有发往非故障进程的消息最终都能被收到。
 
     \textbf{Deciding run}: 决策运行。一个运行是决策的，如果至少有一个进程在该运行中做出了决策。
@@ -88,13 +94,13 @@
                 \item 不考虑 Byzantine 故障，即数据在传输过程不会被篡改。
                 \item 假设消息系统可靠，不会丢失数据包，也不会重复传输数据包。但是不保证数据传输的先后顺序，而且有时候会返回空（$\emptyset$）。
                 \item 存在至多一个 process 会在某一个不确定的时间 dead。
-                \item 为了简化，论文假设所有 process 的input register $x_{p} \in \{0, 1\}$，所有未崩溃的 process 的 output register $y_{p} \in \{0, 1\}$。而且对于正常的共识算法，肯定是要保证所有的非故障 process 必须选择相同值，但是论文在这里放宽了条件，只要求至少存在某个进程最终做出决策。
+                \item 为了简化，论文假设所有 process 的input register $x_{p} \in \{0, 1\}$，所有未崩溃的 process 的 output register 在做出决策后取值为 $\{0, 1\}$（初始值为 $b$，表示未决定）。进程的转移函数在进入决策状态后不能再改变输出寄存器中的值，即 output register 是 \textbf{write-once}（只写一次）的。而且对于正常的共识算法，肯定是要保证所有的非故障 process 必须选择相同值，但是论文在这里放宽了条件，只要求至少存在某个进程最终做出决策。
                 \item 前面提到 message system 可能返回空（$\emptyset$），但是论文假设了如果一个 process 不停从 message system 中接受 message，那它终究能够接收到本该发给它的 message。这样就模拟了网络的延迟，但是消息一定会送达。
             \end{enumerate}
 
         \item \textbf{消息系统}
         
-            Process 之间的通讯是通过消息系统实现的。message的格式为(p, m), p 是 process，m 是 message 的内容。Messgae system 支持两种操作：
+            Process 之间的通讯是通过消息系统实现的。message的格式为(p, m), p 是 process，m 是 message 的内容。Message system 支持两种操作：
             \begin{enumerate}
                 \item send(p, m): 将消息 (p, m) 放入 message system 中。
                 \item receive(p): 从 message system 中取出一个发往 p 的消息 (p, m)，如果没有则返回空（$\emptyset$）。
@@ -127,7 +133,7 @@
 
 现在考虑两个初始配置，如果它们只在某一个进程 $p$ 的初始值上不同，就称它们是"相邻"的。任意两个初始配置之间都可以通过一串相邻的配置连接起来（就是从一个状态经过多次一位上的修改一定可以得到目标状态）。那么在 0-valent 和 1-valent 的初始配置之间，必然存在一对相邻的配置 $C_0$ 和 $C_1$，其中 $C_0$ 是 0-valent，$C_1$ 是 1-valent，且它们只在进程 $p$ 的初始值上有区别。
 
-接下来从 $C_0$ 出发，执行一个 admissible 且 deciding 的运行，并且在这个运行中进程 $p$ 不执行任何步骤（在异步系统中这完全可能，我们可以让调度永远不包含 $p$ 的事件）。设这个运行的调度为 $\sigma$。因为 $\sigma$ 不涉及 $p$，所以它也可以应用到 $C_1$ 上。两个运行除了 $p$ 的内部状态外是完全一样的，因此它们最终会做出相同的决议。
+因为协议 $\mathcal{P}$ 是单故障下完全正确的（定理 1 证明的反证假设），每个 admissible run 都是 deciding run。从 $C_0$ 出发可以构造一个永远不包含进程 $p$ 事件的 admissible run（异步系统允许无限期不调度 $p$，$p$ 可视为已故障），由完全正确性该 run 一定是 deciding 的。设其调度为 $\sigma$。因为 $\sigma$ 不涉及 $p$，所以它也可以应用到 $C_1$ 上。两个运行除了 $p$ 的内部状态外是完全一样的，因此它们最终会做出相同的决议。
 
 如果这个决议是 1，那说明从 $C_0$ 既能走到决议 0（因为 $C_0$ 是 0-valent），也能走到决议 1（我们刚构造出来了），所以 $C_0$ 实际上是 bivalent 的。如果决议是 0，那么 $C_1$ 是 bivalent 的。不管哪种情况，都和"不存在 bivalent 初始配置"的假设矛盾。
 
@@ -152,9 +158,9 @@
 \textbf{情况 2}：$e' = (p, m')$，和 $e$ 是同一个进程的事件。Lemma 1 在这里用不了（两个事件涉及同一个进程）。我们需要换一种思路来导出矛盾：
 
 \begin{enumerate}
-    \item 从 $C_0$ 出发构造一个 deciding run $\sigma$，其中进程 $p$ 不执行任何步骤（异步系统允许我们无限期地不调度 $p$）。设 $\sigma(C_0) = C'_0$，$C'_0$ 做出了某个决议值 $v$。
+    \item 由完全正确性（每个 admissible run 都是 deciding run），从 $C_0$ 出发构造一个 deciding run $\sigma$，其中进程 $p$ 不执行任何步骤（异步系统允许我们无限期地不调度 $p$）。设 $\sigma(C_0) = C'_0$，$C'_0$ 做出了某个决议值 $v$。
     \item 同样的 $\sigma$ 也可以应用到 $C_1$ 上。因为 $\sigma$ 不含 $p$ 的步骤，而 $e'$ 只涉及 $p$，由 Lemma 1，$\sigma$ 和 $e'$ 可交换。所以 $\sigma(C_1) = \sigma(e'(C_0)) = e'(\sigma(C_0)) = e'(C'_0)$，记作 $C'_1$。$C'_0$ 和 $C'_1$ 只在 $p$ 的内部状态上有差别，而 $\sigma$ 中做决议的进程不是 $p$，所以 $C'_1$ 也决议为 $v$。
-    \item 在 $C'_0$ 上应用 $e = (p, m)$，得到 $e(C'_0)$。因为 $\sigma$ 和 $e$ 也可交换（同样由 Lemma 1），所以 $e(C'_0) = e(\sigma(C_0)) = \sigma(e(C_0))$。而 $e(C_0)$ 是 0-valent，从它出发经过 $\sigma$ 到达的 $e(C'_0)$ 也一定是 0-valent。同理，$e(C'_1) = \sigma(e(C_1))$，而 $e(C_1)$ 是 1-valent，所以 $e(C'_1)$ 一定是 1-valent。
+    \item 在 $C'_0$ 上应用 $e = (p, m)$，得到 $e(C'_0)$。因为 $\sigma$ 和 $e$ 也可交换（同样由 Lemma 1），所以 $e(C'_0) = e(\sigma(C_0)) = \sigma(e(C_0))$。而 $e(C_0)$ 是 0-valent，由 valency 的保序性（若配置 $C$ 是 $v$-valent，则从 $C$ 出发可到达的任何配置也是 $v$-valent），从它出发经过 $\sigma$ 到达的 $e(C'_0)$ 也一定是 0-valent。同理，$e(C'_1) = \sigma(e(C_1))$，而 $e(C_1)$ 是 1-valent，所以 $e(C'_1)$ 一定是 1-valent。
     \item 现在换个角度看 $e(C'_0)$：$C'_0$ 已经做出了决议 $v$，而且 output register 是 write-once 的（一旦决定就不能改），所以从 $C'_0$ 走一步到 $e(C'_0)$，决议值不变，仍为 $v$。因此 $e(C'_0)$ 的决议值是 $v$。结合上一步可知 $v = 0$。
     \item 用同样的方式看 $e(C'_1)$：$C'_1$ 决议为 $v$，write-once 性质保证 $e(C'_1)$ 也决议为 $v$。结合上一步可知 $v = 1$。
 \end{enumerate}
@@ -203,7 +209,7 @@
 \textbf{协议的大致思路}：
 这个协议通过构造一个有向图来解决共识问题。
 
-第一阶段，每个进程广播自己的编号，然后等待收齐 $k = \lceil (n+1)/2 \rceil$ 个其他进程的回复。如果进程 $p$ 收到了 $q$ 的回复，就在图 $\Gamma$ 中加一条边 $q \to p$。
+第一阶段，每个进程广播自己的编号，然后等待收到至少 $k-1$ 个其他进程的回复（连同自己共计 $k = \lceil (n+1)/2 \rceil$ 个进程）。如果进程 $p$ 收到了 $q$ 的回复，就在图 $\Gamma$ 中加一条边 $q \to p$。
 
 第二阶段，每个进程构建 $\Gamma$ 的传递闭包 $\Gamma^+$。每个进程把自己的编号、初始值和第一阶段收到的 $k-1$ 个邻居广播给所有人，然后等待接收来自所有已知祖先的第二阶段消息。通过不断重复这个过程，每个进程最终都能知道所有指向自己的祖先以及它们的初始值。
 
